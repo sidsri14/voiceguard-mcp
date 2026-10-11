@@ -1,5 +1,7 @@
 # VoiceGuard MCP
 
+[![CI](https://github.com/sidsri14/voiceguard-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/sidsri14/voiceguard-mcp/actions/workflows/ci.yml)
+
 VoiceGuard MCP is a simulated Alexa+ experience that puts a policy checkpoint between a voice request and a consequential tool action. It exposes a real Streamable HTTP Model Context Protocol server, a browser-based simulation, and a local policy engine with explicit confirmation and tamper-evident auditing.
 
 Built for the **Alexa+ track** and **Open Source mini challenge** of the Build, Ship, Shape: Amazon Developer Hackathon.
