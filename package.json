@@ -10,8 +10,9 @@
   "scripts": {
     "start": "node src/server.mjs",
     "test": "node --test",
-    "check": "node --check src/voice_guard.mjs && node --check src/mcp_server.mjs && node --check src/server.mjs && node --check public/app.js && node --check demo/record-demo.mjs",
-    "demo:record": "node demo/record-demo.mjs"
+    "check": "node --check src/voice_guard.mjs && node --check src/mcp_server.mjs && node --check src/server.mjs && node --check public/app.js && node --check demo/record-demo.mjs && node --check demo/build-video.mjs",
+    "demo:record": "node demo/record-demo.mjs",
+    "demo:build": "npm run demo:record && node demo/build-video.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.3.1",

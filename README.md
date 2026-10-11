@@ -48,7 +48,7 @@ The MCP endpoint is `http://127.0.0.1:8787/mcp`. Health and protocol metadata ar
 4. Load the risky example. Its explicit injection phrase is blocked.
 5. Inspect the audit table and chain integrity indicator.
 
-To reproduce the silent browser walkthrough used for the submission asset, keep the local server running in one terminal and run:
+To reproduce the raw browser walkthrough from a fresh in-process server, run:
 
 ```bash
 npm run demo:record
@@ -56,7 +56,13 @@ npm run demo:record
 
 The recording is written to `demo/voiceguard-demo.webm`. The script drives the browser through the real HTTP and MCP flow; it does not mock the results.
 
-A compact recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4). It is a local submission asset, not a claim that a public YouTube/Vimeo upload has been completed.
+With FFmpeg built with the `flite` and `libass` filters available, generate the narrated and captioned submission asset with:
+
+```bash
+npm run demo:build
+```
+
+A compact 27-second recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4). It is a local submission asset, not a claim that a public YouTube/Vimeo upload has been completed.
 
 ## Architecture
 

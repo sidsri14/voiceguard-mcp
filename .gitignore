@@ -4,3 +4,5 @@ npm-debug.log*
 coverage/
 demo/*.webm
 demo/*contact-sheet.png
+demo/*narration.wav
+demo/*narrated.mp4

@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:06,000
+VoiceGuard MCP is a simulated Alexa+ safety checkpoint running over a real Streamable HTTP MCP server.
+
+2
+00:00:06,000 --> 00:00:10,500
+Low-value allowlisted requests pass immediately.
+
+3
+00:00:10,500 --> 00:00:15,500
+High-value actions pause for explicit user confirmation.
+
+4
+00:00:15,500 --> 00:00:21,500
+Documented injection phrases are blocked, and every decision enters a SHA-256 hash-linked audit trail.
+
+5
+00:00:21,500 --> 00:00:27,300
+This demo executes the actual local MCP flow. It does not process audio or payments.

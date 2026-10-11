@@ -4,7 +4,10 @@ import { dirname, resolve } from 'node:path';
 
 import { chromium } from 'playwright';
 
-const baseUrl = process.env.VOICEGUARD_URL ?? 'http://127.0.0.1:8787';
+import { startVoiceGuardServer } from '../src/server.mjs';
+
+const runningServer = process.env.VOICEGUARD_URL ? null : await startVoiceGuardServer({ port: 0 });
+const baseUrl = process.env.VOICEGUARD_URL ?? runningServer.url;
 const outputPath = resolve(process.env.VOICEGUARD_DEMO_OUTPUT ?? 'demo/voiceguard-demo.webm');
 const browserCandidates = [
   process.env.PLAYWRIGHT_EXECUTABLE_PATH,
@@ -63,6 +66,7 @@ try {
   await video.saveAs(outputPath);
   await context.close();
   await browser.close();
+  await runningServer?.close();
 }
 
 console.log(`Saved demo recording to ${outputPath}`);
