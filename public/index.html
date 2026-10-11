@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="VoiceGuard MCP is a simulated Alexa+ safety experience for reviewing voice-triggered actions before execution.">
+    <title>VoiceGuard MCP | Alexa+ Safety Simulation</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="VoiceGuard MCP home">
+        <span class="brand-mark">VG</span>
+        <span>VoiceGuard MCP</span>
+      </a>
+      <div class="status-pill"><span></span> Local simulation</div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Alexa+ simulated experience / MCP 2026-07-28</p>
+          <h1>Put a policy checkpoint between a voice request and a consequential action.</h1>
+          <p class="hero-copy">VoiceGuard exposes a real Streamable HTTP MCP server that screens transcripts, allowlists tools, enforces spend limits, requests explicit confirmation, and records every decision in a tamper-evident audit chain.</p>
+        </div>
+        <div class="proof-card">
+          <div><span>Transport</span><strong>Streamable HTTP</strong></div>
+          <div><span>Execution</span><strong>Local only</strong></div>
+          <div><span>External transactions</span><strong>None</strong></div>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="VoiceGuard simulation">
+        <div class="panel command-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="kicker">01 / Simulate</p>
+              <h2>Proposed voice action</h2>
+            </div>
+            <button class="quiet-button" id="load-risky" type="button">Load risky example</button>
+          </div>
+
+          <form id="action-form">
+            <label>
+              Session
+              <input id="session-id" value="demo-session-01" maxlength="80" required>
+            </label>
+            <label>
+              Transcript
+              <textarea id="transcript" rows="4" maxlength="2000" required>Order my usual coffee and keep it under ten dollars.</textarea>
+            </label>
+            <div class="field-row">
+              <label>
+                Proposed tool
+                <select id="action">
+                  <option value="place_coffee_order">place_coffee_order</option>
+                  <option value="request_ride">request_ride</option>
+                  <option value="authorize_micro_spend">authorize_micro_spend</option>
+                  <option value="check_balance">check_balance</option>
+                  <option value="execute_shell">execute_shell (blocked)</option>
+                </select>
+              </label>
+              <label>
+                Amount (USD)
+                <input id="amount" type="number" min="0" step="0.01" value="6.50">
+              </label>
+            </div>
+            <button class="primary-button" type="submit">Evaluate through MCP</button>
+          </form>
+        </div>
+
+        <div class="panel decision-panel" aria-live="polite">
+          <div class="panel-heading">
+            <div>
+              <p class="kicker">02 / Decide</p>
+              <h2>Policy result</h2>
+            </div>
+            <span class="transport-badge">POST /mcp</span>
+          </div>
+          <div id="decision-empty" class="empty-state">
+            <span class="radar"></span>
+            <p>Run a request to see the MCP tool decision.</p>
+          </div>
+          <div id="decision-result" class="decision-result hidden">
+            <p id="decision-label" class="decision-label"></p>
+            <h3 id="decision-reason"></h3>
+            <dl>
+              <div><dt>Action</dt><dd id="decision-action"></dd></div>
+              <div><dt>Amount</dt><dd id="decision-amount"></dd></div>
+              <div><dt>Audit hash</dt><dd id="decision-hash"></dd></div>
+            </dl>
+            <div id="confirmation-actions" class="confirmation-actions hidden">
+              <p>This simulation pauses the action until the user explicitly decides.</p>
+              <button class="primary-button" id="approve-action" type="button">Confirm action</button>
+              <button class="danger-button" id="deny-action" type="button">Deny</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="observability">
+        <div class="section-heading">
+          <div>
+            <p class="kicker">03 / Verify</p>
+            <h2>Audit and protocol evidence</h2>
+          </div>
+          <button class="quiet-button" id="refresh-audit" type="button">Refresh</button>
+        </div>
+        <div class="metrics" id="metrics">
+          <article><span>Approved</span><strong id="metric-approved">0</strong></article>
+          <article><span>Blocked</span><strong id="metric-blocked">0</strong></article>
+          <article><span>Awaiting confirmation</span><strong id="metric-pending">0</strong></article>
+          <article><span>Audit chain</span><strong id="metric-chain">Valid</strong></article>
+        </div>
+        <div class="audit-shell">
+          <table>
+            <thead><tr><th>Time</th><th>Decision</th><th>Action</th><th>Reason</th><th>Hash</th></tr></thead>
+            <tbody id="audit-body"><tr><td colspan="5">No decisions yet.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="disclaimer">
+        <strong>Scope:</strong> This is a hackathon simulation. It does not connect to a production Alexa+ account, process audio, verify biometrics, or execute payments. The MCP transport, policy engine, confirmation state machine, spend accounting, and audit chain are implemented and locally testable.
+      </section>
+    </main>
+
+    <footer>Built for the Amazon Developer Hackathon / Alexa+ track.</footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
