@@ -22,9 +22,14 @@ if (!executablePath) {
 }
 
 await mkdir(dirname(outputPath), { recursive: true });
-const browser = await chromium.launch({ headless: true, executablePath });
+const browser = await chromium.launch({
+  headless: true,
+  executablePath,
+  args: ['--window-size=1440,900', '--hide-scrollbars', '--force-device-scale-factor=1']
+});
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
+  deviceScaleFactor: 1,
   colorScheme: 'dark',
   recordVideo: {
     dir: dirname(outputPath),
@@ -32,6 +37,7 @@ const context = await browser.newContext({
   }
 });
 const page = await context.newPage();
+await page.setViewportSize({ width: 1440, height: 900 });
 const video = page.video();
 
 try {
