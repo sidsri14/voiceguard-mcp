@@ -62,7 +62,7 @@ With FFmpeg built with the `libass` filter and network access for neural narrati
 npm run demo:build
 ```
 
-A compact 34-second recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4) and [published unlisted on YouTube](https://youtu.be/VlguU6fWSTg).
+A compact 34-second recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4) and [published unlisted on YouTube](https://youtu.be/8-dawoBFSMc). The recorder fixes the browser window, viewport, and device scale at 1440x900 so the first frame is full-size without compositor letterboxing.
 
 ## Architecture
 
