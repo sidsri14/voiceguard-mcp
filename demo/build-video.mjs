@@ -1,18 +1,23 @@
 import { spawnSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { EdgeTTS } from 'edge-tts-universal';
 
 const root = resolve(import.meta.dirname, '..');
 const rawVideo = resolve(root, 'demo/voiceguard-demo.webm');
-const narration = resolve(root, 'demo/voiceguard-narration.wav');
+const narration = resolve(root, 'demo/voiceguard-narration.mp3');
 const narratedVideo = resolve(root, 'demo/voiceguard-demo-narrated.mp4');
 const finalVideo = resolve(root, 'demo/voiceguard-demo.mp4');
-const narrationText = [
-  'VoiceGuard M C P is a simulated Alexa Plus safety checkpoint running over a real Streamable H T T P M C P server.',
+const subtitles = resolve(root, 'demo/voiceguard-demo.srt');
+const narrationSentences = [
+  'VoiceGuard for MCP is a simulated Alexa Plus safety checkpoint.',
+  'It runs over a real streamable HTTP server using the Model Context Protocol.',
   'Low value allowlisted requests pass immediately.',
   'High value actions pause for explicit user confirmation.',
-  'Documented injection phrases are blocked, and every decision enters an S H A two fifty six hash linked audit trail.',
-  'This demo executes the actual local M C P flow. It does not process audio or payments.'
-].join(' ');
+  'Documented injection phrases are blocked, and every decision enters a SHA-256 hash-linked audit trail.',
+  'This demo executes the actual local MCP flow. It does not process audio or payments.'
+];
+const narrationText = narrationSentences.join(' ');
 
 function runFfmpeg(args) {
   const result = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', ...args], {
@@ -24,18 +29,59 @@ function runFfmpeg(args) {
   if (result.status !== 0) throw new Error(`ffmpeg exited with status ${result.status}`);
 }
 
-runFfmpeg([
-  '-f', 'lavfi',
-  '-i', `flite=text='${narrationText}':voice=slt`,
-  '-ar', '48000',
-  '-ac', '1',
-  narration
-]);
+function duration(path) {
+  const result = spawnSync(
+    'ffprobe',
+    ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', path],
+    { cwd: root, encoding: 'utf8' },
+  );
+  if (result.status !== 0) throw new Error(`ffprobe failed for ${path}`);
+  return Number(result.stdout.trim());
+}
+
+function srtTime(seconds) {
+  const millis = Math.max(0, Math.round(seconds * 1000));
+  const ms = millis % 1000;
+  const totalSeconds = Math.floor(millis / 1000);
+  const sec = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const min = totalMinutes % 60;
+  const hour = Math.floor(totalMinutes / 60);
+  return `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+}
+
+const tts = new EdgeTTS(narrationText, 'en-IN-NeerjaExpressiveNeural', {
+  rate: '+8%',
+  volume: '+0%',
+  pitch: '-2Hz',
+});
+const result = await tts.synthesize();
+writeFileSync(narration, Buffer.from(await result.audio.arrayBuffer()));
+
+const spoken = duration(narration);
+const sourceDuration = duration(rawVideo);
+const tailDuration = 0.8;
+const outputDuration = spoken + tailDuration;
+const videoPad = Math.max(0, outputDuration - sourceDuration);
+const fadeStart = Math.max(0, spoken - 0.6);
+
+const sentenceWordCounts = narrationSentences.map((sentence) => sentence.split(/\s+/).length);
+const totalWords = sentenceWordCounts.reduce((sum, count) => sum + count, 0);
+let captionStart = 0.1;
+const captionRows = narrationSentences.map((sentence, index) => {
+  const captionEnd = index === narrationSentences.length - 1
+    ? spoken
+    : captionStart + spoken * (sentenceWordCounts[index] / totalWords);
+  const row = `${index + 1}\n${srtTime(captionStart)} --> ${srtTime(captionEnd)}\n${sentence}`;
+  captionStart = captionEnd;
+  return row;
+});
+writeFileSync(subtitles, `${captionRows.join('\n\n')}\n`);
 
 runFfmpeg([
   '-i', rawVideo,
   '-i', narration,
-  '-filter_complex', '[0:v]tpad=stop_mode=clone:stop_duration=8[v];[1:a]afade=t=out:st=26.5:d=0.8[a]',
+  '-filter_complex', `[0:v]tpad=stop_mode=clone:stop_duration=${videoPad.toFixed(3)}[v];[1:a]afade=t=in:st=0:d=0.2,afade=t=out:st=${fadeStart.toFixed(3)}:d=0.55,apad=pad_dur=${tailDuration}[a]`,
   '-map', '[v]',
   '-map', '[a]',
   '-c:v', 'libx264',
@@ -45,7 +91,7 @@ runFfmpeg([
   '-c:a', 'aac',
   '-b:a', '128k',
   '-movflags', '+faststart',
-  '-shortest',
+  '-t', outputDuration.toFixed(3),
   narratedVideo
 ]);
 

@@ -21,6 +21,7 @@
     "zod": "4.2.0"
   },
   "devDependencies": {
+    "edge-tts-universal": "1.4.0",
     "playwright": "1.61.1"
   }
 }

@@ -56,13 +56,13 @@ npm run demo:record
 
 The recording is written to `demo/voiceguard-demo.webm`. The script drives the browser through the real HTTP and MCP flow; it does not mock the results.
 
-With FFmpeg built with the `flite` and `libass` filters available, generate the narrated and captioned submission asset with:
+With FFmpeg built with the `libass` filter and network access for neural narration, generate the narrated and captioned submission asset with:
 
 ```bash
 npm run demo:build
 ```
 
-A compact 27-second recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4). It is a local submission asset, not a claim that a public YouTube/Vimeo upload has been completed.
+A compact 34-second recorded run is included at [`demo/voiceguard-demo.mp4`](demo/voiceguard-demo.mp4) and [published unlisted on YouTube](https://youtu.be/VlguU6fWSTg).
 
 ## Architecture
 
